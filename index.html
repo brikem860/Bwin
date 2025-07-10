@@ -355,7 +355,7 @@
             <div class="receipt-content">
                 <div class="receipt-header">
                     <div class="logo">B-WIN</div>
-                    <h2>PREMIUM BETTING SLIP</h2>
+                    <h2>PREMIUM FIXED SLIP</h2>
                     <div class="date" id="currentDate"></div>
                 </div>
                 
@@ -366,7 +366,7 @@
                 <div id="receiptMatches">
                     <div class="loading" style="color: #000;">
                         <div class="spinner" style="border-color: #ccc; border-top-color: #000;"></div>
-                        <p>Loading matches...</p>
+                        <p>Loading today's fixed slip...</p>
                     </div>
                 </div>
                 
@@ -385,7 +385,7 @@
         </div>
         
         <a href="https://wa.me/17732362274?text=Hi! I saw your premium betting slip and I'm interested in getting the predictions for today's matches. Can you share the premium tips?" class="buy-button">
-            🔥 Request Premium Predictions - WhatsApp
+            🔥 BUY FIXED SLIP
         </a>
 
         <div class="other-predictions">
@@ -549,7 +549,7 @@
             }
             
             // Take exactly 5 matches
-            const selectedMatches = matches.slice(0, 5);
+            const selectedMatches = matches.slice(0, 3);
             
             let html = '';
             selectedMatches.forEach(match => {
@@ -559,7 +559,7 @@
                     <div class="receipt-match">
                         <div class="receipt-teams">${match.homeTeam.name} vs ${match.awayTeam.name}</div>
                         <div class="receipt-prediction">- -</div>
-                        <div class="receipt-odds">${odds}</div>
+                        <div class="receipt-odds">fixed</div>
                     </div>
                 `;
             });
