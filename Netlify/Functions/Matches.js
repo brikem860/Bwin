@@ -1,11 +1,27 @@
 
+let cachedDate = null;
+let cachedData = null;
+
 exports.handler = async function(event, context) {
-  const res = await fetch('https://api.football-data.org/v4/matches', {
-    headers: { 'X-Auth-Token': 'd0fdc3856cd14b9a856ab1b473b0f12d' }
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (cachedDate === today && cachedData) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify(cachedData),
+    };
+  }
+
+  const response = await fetch(`https://v3.football.api-sports.io/fixtures?date=${today}`, {
+    headers: { 'x-apisports-key': 'ce366e4369175addc3df7952684299e1' }
   });
-  const data = await res.json();
+  const data = await response.json();
+
+  cachedDate = today;
+  cachedData = data;
+
   return {
     statusCode: 200,
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
   };
 };
