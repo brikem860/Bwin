@@ -477,7 +477,7 @@
 
         async function loadMatches() {
     try {
-        const response = await fetch('/.netlify/Functions/Matches');
+        const response = await fetch('/.netlify/functions/fixtures');
         const data = await response.json();
         console.log(data);
         
