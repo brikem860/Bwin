@@ -16,6 +16,7 @@ exports.handler = async function(event, context) {
     headers: { 'x-apisports-key': 'ce366e4369175addc3df7952684299e1' }
   });
   const data = await response.json();
+  console.log('666')
 
   cachedDate = today;
   cachedData = data;
