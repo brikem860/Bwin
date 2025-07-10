@@ -476,44 +476,40 @@
         }
 
         async function loadMatches() {
-            try {
-                // Try to fetch from football-data.org
-                const response = await fetch('https://v3.football.api-sports.io/fixtures', {
-  headers: {
-    'x-apisports-key': 'ce366e4369175addc3df7952684299e1'
-  }
-});
-const data = await response.json();
-console.log(data);
-
-                
-                let matches = [];
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    matches = data.matches.filter(match => {
-                        const matchDate = new Date(match.utcDate);
-                        const today = new Date();
-                        return matchDate.toDateString() === today.toDateString();
-                    }).slice(0, 10);
-                }
-                
-                // If no matches from API or API fails, use mock data
-                if (matches.length === 0) {
-                    matches = generateMockMatches();
-                }
-                
-                displayPremiumMatches(matches.slice(0, 5));
-                displayAllPredictions(matches.slice(5));
-                
-            } catch (error) {
-                console.error('Error loading matches:', error);
-                // Fallback to mock data
-                const mockMatches = generateMockMatches();
-                displayPremiumMatches(mockMatches.slice(0, 5));
-                displayAllPredictions(mockMatches.slice(5));
+    try {
+        const response = await fetch('https://v3.football.api-sports.io/fixtures?date=2025-07-10', {
+            headers: {
+                'x-apisports-key': 'ce366e4369175addc3df7952684299e1'
             }
+        });
+        const data = await response.json();
+        console.log(data);
+        
+        let matches = [];
+        
+        if (response.ok && data.response && data.response.length) {
+            matches = data.response.slice(0, 10).map(match => ({
+                homeTeam: { name: match.teams.home.name },
+                awayTeam: { name: match.teams.away.name },
+                utcDate: match.fixture.date,
+                competition: { name: match.league.name },
+                status: match.fixture.status.short
+            }));
         }
+        
+        if (matches.length === 0) {
+            matches = generateMockMatches();
+        }
+        
+        displayPremiumMatches(matches.slice(0, 5));
+        displayAllPredictions(matches.slice(5));
+    } catch (error) {
+        console.error('Error loading matches:', error);
+        const mockMatches = generateMockMatches();
+        displayPremiumMatches(mockMatches.slice(0, 5));
+        displayAllPredictions(mockMatches.slice(5));
+    }
+}
 
         function generateMockMatches() {
             const teams = [
