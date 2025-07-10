@@ -478,7 +478,7 @@
         async function loadMatches() {
             try {
                 // Try to fetch from football-data.org
-                const response = await fetch('https://api.football-data.org/v4/matches', {
+                const response = await fetch('/.netlify/functions/matches', {
                     headers: {
                         'X-Auth-Token': API_TOKEN
                     }
