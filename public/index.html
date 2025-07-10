@@ -563,40 +563,52 @@
             container.innerHTML = html;
         }
 
-        function displayAllPredictions(matches) {
-            const container = document.getElementById('allPredictions');
-            
-            if (matches.length === 0) {
-                container.innerHTML = '<p style="color: white; text-align: center;">No predictions available for today.</p>';
-                return;
-            }
-            
-            let html = '';
-            matches.forEach(match => {
-                const prediction = generatePrediction(match);
-                const odds = generateOdds();
-                
-                html += `
-                    <div class="prediction-card">
-                        <div class="match-info">
-                            <div class="teams">${match.homeTeam.name} vs ${match.awayTeam.name}</div>
-                            <div class="prediction">${prediction.text}</div>
-                        </div>
-                        <div class="odds">
-                            Odds: ${odds.home} | ${odds.draw} | ${odds.away}
-                        </div>
-                        <div style="margin-top: 10px; color: #666;">
-                            <strong>Analysis:</strong> Based on recent form and statistical data
-                        </div>
-                        <div style="margin-top: 5px; color: #27ae60; font-weight: bold;">
-                            Confidence: ${prediction.confidence}%
-                        </div>
-                    </div>
-                `;
-            });
-            
-            container.innerHTML = html;
+        
+async function displayAllPredictions(matches) {
+    const container = document.getElementById('allPredictions');
+    let oddsData = { response: [] };
+    try {
+        const oddsRes = await fetch('/.netlify/functions/odds');
+        oddsData = await oddsRes.json();
+    } catch (e) {
+        console.error('Failed to load odds:', e);
+    }
+
+    let html = '';
+    matches.forEach(match => {
+        // Get the fixture id (make sure it's available in your match object)
+        const fixtureId = match.fixture?.id || match.id; // adjust as needed
+        // Find corresponding odds
+        const oddsEntry = oddsData.response.find(o => o.fixture.id === fixtureId);
+        let oddsText = 'N/A';
+        if (oddsEntry && oddsEntry.bookmakers && oddsEntry.bookmakers?.bets?.values) {
+            const values = oddsEntry.bookmakers.bets.values;
+            oddsText = values.map(v => `${v.value}: ${v.odd}`).join(' | ');
         }
+        const prediction = generatePrediction(match);
+
+        html += `
+            <div class="prediction-card">
+                <div class="match-info">
+                    <div class="teams">${match.homeTeam.name} vs ${match.awayTeam.name}</div>
+                    <div class="prediction">${prediction.text}</div>
+                </div>
+                <div class="odds">
+                    Odds: ${oddsText}
+                </div>
+                <div style="margin-top: 10px; color: #666;">
+                    <strong>Analysis:</strong> Based on recent form and statistical data
+                </div>
+                <div style="margin-top: 5px; color: #27ae60; font-weight: bold;">
+                    Confidence: ${prediction.confidence}%
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
+
 
         // Load matches when page loads
         window.addEventListener('load', loadMatches);
